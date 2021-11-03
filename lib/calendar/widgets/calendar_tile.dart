@@ -11,7 +11,7 @@ class CalendarTile extends StatelessWidget {
   final bool isDayOfWeek;
   final bool isSelected;
   final bool inMonth;
-  final List<CalendarEvent>? events;
+  final CalendarEvent? calendarEvent;
   final TextStyle? dayOfWeekStyle;
   final TextStyle? dateStyles;
   final Widget? child;
@@ -22,6 +22,7 @@ class CalendarTile extends StatelessWidget {
   final int? position;
 
   const CalendarTile({
+    Key? key,
     this.onDateSelected,
     this.date,
     this.child,
@@ -31,13 +32,13 @@ class CalendarTile extends StatelessWidget {
     this.isDayOfWeek = false,
     this.isSelected = false,
     this.inMonth = true,
-    this.events,
+    this.calendarEvent,
     this.selectedColor,
     this.todayColor,
     this.eventColor,
     this.eventDoneColor,
     this.position,
-  });
+  }) : super(key: key);
 
   Widget renderDateOrDayOfWeek(BuildContext context) {
     BorderRadius borderRadiusOfDay;
@@ -62,6 +63,36 @@ class CalendarTile extends StatelessWidget {
       borderRadiusOfDay = borderRadiusNone;
     }
 
+    BoxDecoration boxDecorationOfDay;
+    Color colorOfDay;
+
+    if (calendarEvent?.startTime == date && isSelected) {
+      boxDecorationOfDay = BoxDecoration(
+        shape: BoxShape.circle,
+        color: Theme.of(context).primaryColor,
+      );
+      colorOfDay = Colors.white;
+    } else if (calendarEvent?.startTime == date) {
+      boxDecorationOfDay = BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Theme.of(context).primaryColor,
+          width: 2,
+        ),
+      );
+      colorOfDay = AppColors.black;
+    } else if (isSelected) {
+      boxDecorationOfDay = BoxDecoration(
+        shape: BoxShape.rectangle,
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        color: Theme.of(context).primaryColor,
+      );
+      colorOfDay = Colors.white;
+    } else {
+      boxDecorationOfDay = const BoxDecoration();
+      colorOfDay = AppColors.black;
+    }
+
     if (isDayOfWeek) {
       return Container(
         alignment: Alignment.center,
@@ -79,78 +110,24 @@ class CalendarTile extends StatelessWidget {
         ),
       );
     } else {
-      // int eventCount = 0;
-
       return GestureDetector(
         onTap: onDateSelected,
         child: Padding(
-          padding: const EdgeInsets.all(1.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
-            decoration: isSelected && date != null
-                ? BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: selectedColor != null
-                        ? Utils.isSameDay(date!, DateTime.now())
-                            ? Colors.red
-                            : selectedColor
-                        : Theme.of(context).primaryColor,
-                  )
-                : const BoxDecoration(),
+            decoration: boxDecorationOfDay,
             alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  date != null ? DateFormat("d").format(date!) : '',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w400,
-                    color: isSelected && date != null
-                        ? Colors.white
-                        : Utils.isSameDay(date!, DateTime.now())
-                            ? todayColor
-                            : inMonth
-                                ? Colors.black
-                                : Colors.grey,
-                  ),
-                ),
-                // events != null && events!.isNotEmpty
-                //     ? Row(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: events!.map(
-                //           (event) {
-                //             eventCount++;
-                //             if (eventCount > 3) return Container();
-
-                //             return Container(
-                //               margin: const EdgeInsets.only(
-                //                 left: 2.0,
-                //                 right: 2.0,
-                //                 top: 1.0,
-                //               ),
-                //               width: 5.0,
-                //               height: 5.0,
-                //               decoration: BoxDecoration(
-                //                 shape: BoxShape.circle,
-                //                 color: (() {
-                //                   if (event.isDone) {
-                //                     return eventDoneColor ??
-                //                         Theme.of(context).primaryColor;
-                //                   }
-                //                   if (isSelected) return Colors.white;
-                //                   return eventColor ??
-                //                       Theme.of(context)
-                //                           .textTheme
-                //                           .bodyText1
-                //                           ?.color;
-                //                 }()),
-                //               ),
-                //             );
-                //           },
-                //         ).toList(),
-                //       )
-                //     : Container(),
-              ],
+            child: Text(
+              date != null ? DateFormat('d').format(date!) : '',
+              style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.w400,
+                color: Utils.isSameDay(date!, DateTime.now())
+                    ? todayColor
+                    : inMonth
+                        ? colorOfDay
+                        : Colors.grey,
+              ),
             ),
           ),
         ),

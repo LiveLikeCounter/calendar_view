@@ -1,11 +1,10 @@
+import 'package:calendar_view/calendar/models/calendar_event.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
-import 'package:calendar_view/shared/shared.dart';
-
 import 'calendar_tile.dart';
-
-typedef DayBuilder(BuildContext context, DateTime day);
+import 'package:calendar_view/shared/shared.dart';
+import 'package:calendar_view/calendar/data/calendar_events.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({
@@ -60,56 +59,19 @@ class _CalendarState extends State<Calendar> {
     return dateStyles;
   }
 
-  _firstDayOfWeek(DateTime date) {
-    final DateTime day = DateTime.utc(
-        _selectedDate.year, _selectedDate.month, _selectedDate.day, 12);
-    return day.weekday == 7 ? day : day.subtract(Duration(days: day.weekday));
-  }
-
-  _lastDayOfWeek(DateTime date) {
-    return _firstDayOfWeek(date).add(const Duration(days: 7));
-  }
-
   void handleSelectedDateAndUserCallback(DateTime day) {
-    var firstDayOfCurrentWeek = _firstDayOfWeek(day);
-    var lastDayOfCurrentWeek = _lastDayOfWeek(day);
-
-    // Check if the selected day falls into the next month. If this is the case,
-    // then we need to additionaly check, if a day in next year was selected.
-    // if (_selectedDate.month > day.month) {
-    //   // Day in next year selected? Switch to next month.
-    //   if (_selectedDate.year < day.year) {
-    //     nextMonth();
-    //   } else {
-    //     previousMonth();
-    //   }
-    // }
-
-    // Check if the selected day falls into the last month. If this is the case,
-    // then we need to additionaly check, if a day in last year was selected.
-    // if (_selectedDate.month < day.month) {
-    //   // Day in next last selected? Switch to next month.
-    //   if (_selectedDate.year > day.year) {
-    //     previousMonth();
-    //   } else {
-    //     nextMonth();
-    //   }
-    // }
-
     setState(() {
       _selectedDate = day;
       selectedMonthsDays = _daysInMonth(day);
-      // _selectedEvents = widget.events?[_selectedDate] ?? [];
     });
 
-    if (widget.onDateSelected != null) {
-      widget.onDateSelected!(day);
-    }
+    if (widget.onDateSelected != null) widget.onDateSelected!(day);
   }
 
   List<Widget> calendarBuilder() {
     List<Widget> dayWidgets = [];
     List<DateTime> selectedMonthsDays = _daysInMonth(_selectedDate);
+    CalendarEvent calendarEvent = CalendarEvent();
 
     Utils.weekdays.forEachIndexed((index, day) {
       dayWidgets.add(
@@ -134,11 +96,17 @@ class _CalendarState extends State<Calendar> {
 
       if (Utils.isFirstDayOfMonth(day)) monthStarted = true;
 
+      if (calendarEvents[day]?.first != null) {
+        calendarEvent = calendarEvents[day]?.first as CalendarEvent;
+      } else {
+        calendarEvent = CalendarEvent();
+      }
+
       dayWidgets.add(
         CalendarTile(
           todayColor: AppColors.primaryDark,
           eventColor: AppColors.primary,
-          // events: events![day],
+          calendarEvent: calendarEvent,
           onDateSelected: () => handleSelectedDateAndUserCallback(day),
           date: day,
           dateStyles: configureDateStyle(monthStarted, monthEnded),
