@@ -11,7 +11,7 @@ class CalendarTile extends StatelessWidget {
   final bool isDayOfWeek;
   final bool isSelected;
   final bool inMonth;
-  final List<CleanCalendarEvent>? events;
+  final List<CalendarEvent>? events;
   final TextStyle? dayOfWeekStyle;
   final TextStyle? dateStyles;
   final Widget? child;
@@ -79,9 +79,9 @@ class CalendarTile extends StatelessWidget {
         ),
       );
     } else {
-      int eventCount = 0;
+      // int eventCount = 0;
 
-      return InkWell(
+      return GestureDetector(
         onTap: onDateSelected,
         child: Padding(
           padding: const EdgeInsets.all(1.0),
@@ -114,42 +114,42 @@ class CalendarTile extends StatelessWidget {
                                 : Colors.grey,
                   ),
                 ),
-                events != null && events!.isNotEmpty
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: events!.map(
-                          (event) {
-                            eventCount++;
-                            if (eventCount > 3) return Container();
+                // events != null && events!.isNotEmpty
+                //     ? Row(
+                //         mainAxisAlignment: MainAxisAlignment.center,
+                //         children: events!.map(
+                //           (event) {
+                //             eventCount++;
+                //             if (eventCount > 3) return Container();
 
-                            return Container(
-                              margin: const EdgeInsets.only(
-                                left: 2.0,
-                                right: 2.0,
-                                top: 1.0,
-                              ),
-                              width: 5.0,
-                              height: 5.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: (() {
-                                  if (event.isDone) {
-                                    return eventDoneColor ??
-                                        Theme.of(context).primaryColor;
-                                  }
-                                  if (isSelected) return Colors.white;
-                                  return eventColor ??
-                                      Theme.of(context)
-                                          .textTheme
-                                          .bodyText1
-                                          ?.color;
-                                }()),
-                              ),
-                            );
-                          },
-                        ).toList(),
-                      )
-                    : Container(),
+                //             return Container(
+                //               margin: const EdgeInsets.only(
+                //                 left: 2.0,
+                //                 right: 2.0,
+                //                 top: 1.0,
+                //               ),
+                //               width: 5.0,
+                //               height: 5.0,
+                //               decoration: BoxDecoration(
+                //                 shape: BoxShape.circle,
+                //                 color: (() {
+                //                   if (event.isDone) {
+                //                     return eventDoneColor ??
+                //                         Theme.of(context).primaryColor;
+                //                   }
+                //                   if (isSelected) return Colors.white;
+                //                   return eventColor ??
+                //                       Theme.of(context)
+                //                           .textTheme
+                //                           .bodyText1
+                //                           ?.color;
+                //                 }()),
+                //               ),
+                //             );
+                //           },
+                //         ).toList(),
+                //       )
+                //     : Container(),
               ],
             ),
           ),
@@ -161,7 +161,7 @@ class CalendarTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (child != null) {
-      return InkWell(
+      return GestureDetector(
         child: child,
         onTap: onDateSelected,
       );

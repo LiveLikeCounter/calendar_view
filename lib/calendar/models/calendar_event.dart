@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CleanCalendarEvent {
+class CalendarEvent {
   String summary;
   String description;
   String location;
@@ -10,7 +10,7 @@ class CleanCalendarEvent {
   bool isAllDay;
   bool isDone;
 
-  CleanCalendarEvent(
+  CalendarEvent(
     this.summary, {
     this.description = '',
     this.location = '',
